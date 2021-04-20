@@ -1,0 +1,27 @@
+{
+  "name": "create-express-svr",
+  "version": "1.0.0",
+  "description": "create nodeserver depends express",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smartdhh/create-express-svr.git"
+  },
+  "keywords": [
+    "express",
+    "server",
+    "http",
+    "websocket",
+    "https",
+    "mqtt"
+  ],
+  "author": "duhonghao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smartdhh/create-express-svr/issues"
+  },
+  "homepage": "https://github.com/smartdhh/create-express-svr#readme"
+}
