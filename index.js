@@ -1,14 +1,10 @@
 #!/usr/bin/env node
-const clone = require("git-clone");
 const program = require("commander");
-const shell = require("shelljs");
-const log = require("tracer").colorConsole();
-
 var VERSION = require("./package").version;
+var TEMPLATE_DIR = path.join(__dirname, "..", "templates");
+const CLINAME = "create-express-svr";
 
-const cliname = "create-express-svr";
-
-program.name(cliname).version(VERSION, "    --version").usage("[dir]").parse(process.argv);
+program.name(CLINAME).version(VERSION, "    --version").usage("[dir]").parse(process.argv);
 
 main();
 
@@ -40,6 +36,7 @@ function main() {
 function createApplication(name, dir) {
     console.log();
 
+    // package数据
     var pkg = {
         name: name,
         version: VERSION,
@@ -66,40 +63,19 @@ function createApplication(name, dir) {
         mkdir(dir, ".");
     }
 
-    mkdir(dir, "public");
-    // copy route templates
-    mkdir(dir, "routes");
-    copyTemplateMulti("js/routes", dir + "/routes", "*.js");
+    // 拷贝所需要的文件
+    ["app.js"].forEach(function (key) {
+        copyTemplate(key, path.join(dir, "public/" + key));
+    });
 
-    // sort dependencies like npm(1)
-    pkg.dependencies = sortedObject(pkg.dependencies);
+    // 创建文件夹并拷贝文件
+    [("bin", "core", "pulbic", "routes", "routes/path")].forEach(function (key) {
+        mkdir(dir, key);
+        copyTemplateMulti(key, dir + "/" + key, "*.js");
+    });
 
-    // write files
-    write(path.join(dir, "app.js"), app.render());
-    write(path.join(dir, "package.json"), JSON.stringify(pkg, null, 2) + "\n");
-    mkdir(dir, "bin");
-    write(path.join(dir, "bin/www"), www.render(), MODE_0755);
-
-    var prompt = launchedFromCmd() ? ">" : "$";
-
-    if (dir !== ".") {
-        console.log();
-        console.log("   change directory:");
-        console.log("     %s cd %s", prompt, dir);
-    }
-
-    console.log();
-    console.log("   install dependencies:");
-    console.log("     %s npm install", prompt);
-    console.log();
-    console.log("   run the app:");
-
-    if (launchedFromCmd()) {
-        console.log("     %s SET DEBUG=%s:* & npm start", prompt, name);
-    } else {
-        console.log("     %s DEBUG=%s:* npm start", prompt, name);
-    }
-
+    // 创建package.json文件
+    write(path.join(dir, "package.json"), JSON.stringify(pkg, null, 4) + "\n");
     console.log();
 }
 
@@ -116,6 +92,10 @@ function emptyDirectory(dir, fn) {
         if (err && err.code !== "ENOENT") throw err;
         fn(!files || !files.length);
     });
+}
+
+function copyTemplate(from, to) {
+    write(to, fs.readFileSync(path.join(TEMPLATE_DIR, from), "utf-8"));
 }
 
 function copyTemplateMulti(fromDir, toDir, nameGlob) {
