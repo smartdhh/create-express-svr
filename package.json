@@ -3,8 +3,13 @@
     "version": "1.0.0",
     "description": "create nodeserver depends express",
     "main": "index.js",
+    "bin": {
+        "create-express-svr": "./index.js"
+    },
     "dependencies": {
-        "commander": "2.15.1"
+        "commander": "2.15.1",
+        "minimatch": "3.0.4",
+        "mkdirp": "0.5.1"
     },
     "scripts": {
         "test": "start"

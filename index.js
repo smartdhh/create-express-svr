@@ -1,7 +1,15 @@
 #!/usr/bin/env node
-const program = require("commander");
+var fs = require("fs");
+var minimatch = require("minimatch");
+var mkdirp = require("mkdirp");
+var path = require("path");
+var program = require("commander");
+var readline = require("readline");
+
+var MODE_0666 = parseInt("0666", 8);
+var MODE_0755 = parseInt("0755", 8);
 var VERSION = require("./package").version;
-var TEMPLATE_DIR = path.join(__dirname, "..", "templates");
+var TEMPLATE_DIR = path.join(__dirname, "templates");
 const CLINAME = "create-express-svr";
 
 program.name(CLINAME).version(VERSION, "    --version").usage("[dir]").parse(process.argv);
@@ -26,7 +34,7 @@ function main() {
                     createApplication(appName, destinationPath);
                 } else {
                     console.error("aborting");
-                    exit(1);
+                    process.exit(1);
                 }
             });
         }
@@ -65,11 +73,11 @@ function createApplication(name, dir) {
 
     // 拷贝所需要的文件
     ["app.js"].forEach(function (key) {
-        copyTemplate(key, path.join(dir, "public/" + key));
+        copyTemplate(key, path.join(dir, key));
     });
 
     // 创建文件夹并拷贝文件
-    [("bin", "core", "pulbic", "routes", "routes/path")].forEach(function (key) {
+    ["bin", "core", "public", "routes", "routes/path"].forEach(function (key) {
         mkdir(dir, key);
         copyTemplateMulti(key, dir + "/" + key, "*.js");
     });
@@ -77,6 +85,23 @@ function createApplication(name, dir) {
     // 创建package.json文件
     write(path.join(dir, "package.json"), JSON.stringify(pkg, null, 4) + "\n");
     console.log();
+}
+
+function confirm(msg, callback) {
+    var rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    rl.question(msg, function (input) {
+        rl.close();
+        callback(/^y|yes|ok|true$/i.test(input));
+    });
+}
+
+function write(file, str, mode) {
+    fs.writeFileSync(file, str, { mode: mode || MODE_0666 });
+    console.log("   \x1b[36mcreate\x1b[0m : " + file);
 }
 
 function createAppName(pathName) {

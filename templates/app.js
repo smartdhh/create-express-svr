@@ -6,7 +6,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
 // 输出模板
-var respTemp = require("./data/response");
+var respTemp = require("./core/response");
 // 返回配置的http和websocket对象
 var routerConfig = {};
 

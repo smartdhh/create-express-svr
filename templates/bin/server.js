@@ -46,7 +46,7 @@ function onListening(type, port) {
 }
 
 var startTypes = process.env.TYPE || "http,https,ws";
-console.log(startTypes);
+
 var serversConfig = {
     http: {
         portkey: "HTTPPORT",
