@@ -79,7 +79,9 @@ function createApplication(name, dir) {
     // 创建文件夹并拷贝文件
     ["bin", "core", "public", "routes", "routes/path"].forEach(function (key) {
         mkdir(dir, key);
-        copyTemplateMulti(key, dir + "/" + key, "*.js");
+        if (key === "public") {
+            copyTemplateMulti(key, dir + "/" + key, "*.js");
+        }
     });
 
     // 创建package.json文件
