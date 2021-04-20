@@ -40,6 +40,28 @@ function main() {
 function createApplication(name, dir) {
     console.log();
 
+    var pkg = {
+        name: name,
+        version: VERSION,
+        scripts: {
+            start: "cross-env TYPE=http nodemon ./bin/server.js",
+            all: "nodemon ./bin/server.js",
+            ws: "cross-env TYPE=ws nodemon ./bin/server.js",
+            https: "cross-env TYPE=https nodemon ./bin/server.js",
+        },
+        dependencies: {
+            "cookie-parser": "~1.4.3",
+            express: "^4.16.3",
+            "express-ws": "^3.0.0",
+            cors: "^2.8.4",
+            morgan: "~1.9.0",
+        },
+        devDependencies: {
+            "cross-env": "^7.0.3",
+            nodemon: "^1.17.4",
+        },
+    };
+
     if (dir !== ".") {
         mkdir(dir, ".");
     }
@@ -48,7 +70,6 @@ function createApplication(name, dir) {
     // copy route templates
     mkdir(dir, "routes");
     copyTemplateMulti("js/routes", dir + "/routes", "*.js");
-
 
     // sort dependencies like npm(1)
     pkg.dependencies = sortedObject(pkg.dependencies);
